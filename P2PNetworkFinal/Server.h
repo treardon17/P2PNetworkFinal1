@@ -6,17 +6,24 @@
 #include <iterator>
 #include <set>
 #include <sstream>
+#include <thread>
+#include <mutex>
 #include "Socket.h"
 
 class Server {
 private:
-	std::set<std::string> knownIPs;
+	std::set<std::string> *knownIPs;
+	std::set<std::string> *database;
 	Socket* socket;
+	std::mutex lock;			// Lock console for mutual exclusive access
 	const int port = 12345;
 
 public:
 
-	Server() {
+	Server(std::set<std::string> *knownIPs, std::set<std::string> *database) {
+		this->knownIPs = knownIPs;
+		this->database = database;
+
 		if (!Socket::Init()) {
 			std::cerr << "Fail to initialize WinSock!\n";
 			return;
@@ -42,12 +49,24 @@ public:
 		socket = NULL;
 	}
 
+	/*
+	void serverExecute(){
+		Socket *conn;
+		do {
+			conn = socket->sock_accept();
+			Node *node = new Node(conn);
+			std::thread *thr = new std::thread(*node);
+			thr->detach();
+		} while (true);
+	}
+	*/
+
 	//Allows server to send the connected client all IP addresses that have connected to the server
 	std::string sendClientAllIPs() {
 		std::ostringstream ipStream; //stream that takes in the ip addresses
 		std::set<std::string>::iterator setItr;
 		//formatting the IPs separated by commas
-		for (setItr = knownIPs.begin(); setItr != knownIPs.end(); setItr++) {
+		for (setItr = knownIPs->begin(); setItr != knownIPs->end(); setItr++) {
 			ipStream << *setItr << ",";
 		}
 		Socket conn = *socket->sock_accept();

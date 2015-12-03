@@ -10,23 +10,38 @@
 
 class Client {
 private:
-	std::set<std::string> knownServerIPs;
 	std::vector<Socket*> connections;
+	std::set<std::string> *knownIPs;
+	std::set<std::string> *database;
 	std::string myIP;
+	std::mutex lock;			// Lock console for mutual exclusive access
 	const int port = 12345;
 
 public:
-	Client() {
+	Client(std::set<std::string> *knownIPs, std::set<std::string> *database, std::string myIP) {
 		if (!Socket::Init()) {
 			std::cerr << "Fail to initialize WinSock!\n";
 			return;
 		}
+		this->knownIPs = knownIPs;
+		this->database = database;
+		this->myIP = myIP;
+
+		//add a connection with the IP address that was given by the user
+		if (knownIPs->size() > 0) {
+			std::string connectIP = *knownIPs->begin();
+			addConnection(connectIP);
+		}
 	}
-	~Client(){}
+	~Client(){
+		delete knownIPs;
+		delete database;
+	}
 
 	//adds a known IP to the Client's set of IPs
 	void addKnownIP(std::string newIP) {
-		knownServerIPs.insert(newIP);
+		std::lock_guard<std::mutex> lk(lock);
+		knownIPs->insert(newIP);
 	}
 
 	//adds a socket connection to the vector of connections
@@ -39,7 +54,7 @@ public:
 		}
 		else {
 			addKnownIP(peerIP);
-			socket->msg_send(socket->getComputerIP()); //sends the client's IP address to the server node
+			socket->msg_send(myIP); //sends the client's IP address to the server node
 		}
 	}
 
@@ -49,6 +64,16 @@ public:
 		std::cout << message;
 		std::cin.get();
 		exit(0);
+	}
+
+	void operator()() {
+		std::string msg;
+		int line = 0;
+		do {
+			//msg = console->GetInput();
+			//socket->msg_send(msg);
+			//console->UpdateMessageBuffer(msg);
+		} while (true);
 	}
 };
 

@@ -1,14 +1,41 @@
-﻿Build started 12/1/2015 3:43:13 PM.
-     1>Project "C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal-0\P2PNetworkFinal\P2PNetworkFinal.vcxproj" on node 2 (Build target(s)).
+﻿Build started 12/3/2015 12:42:05 PM.
+     1>Project "C:\Users\jflinn18\Documents\GitHub\P2PNetworkFinal1\P2PNetworkFinal\P2PNetworkFinal.vcxproj" on node 2 (Rebuild target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
          main.cpp
-     1>c:\users\treardon17\documents\github\p2pnetworkfinal-0\p2pnetworkfinal\socket.h(225): warning C4018: '<': signed/unsigned mismatch
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal-0\Debug\P2PNetworkFinal.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal-0\Debug\P2PNetworkFinal.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal-0\Debug\P2PNetworkFinal.lib" /MACHINE:X86 Debug\main.obj
-         P2PNetworkFinal.vcxproj -> C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal-0\Debug\P2PNetworkFinal.exe
-     1>Done Building Project "C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal-0\P2PNetworkFinal\P2PNetworkFinal.vcxproj" (Build target(s)).
+     1>c:\users\jflinn18\documents\github\p2pnetworkfinal1\p2pnetworkfinal\socket.h(225): warning C4018: '<': signed/unsigned mismatch
+     1>c:\program files (x86)\microsoft visual studio 14.0\vc\include\tuple(75): error C2280: 'Server::Server(const Server &)': attempting to reference a deleted function
+         c:\users\jflinn18\documents\github\p2pnetworkfinal1\p2pnetworkfinal\server.h(94): note: compiler has generated 'Server::Server' here
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\tuple(233): note: see reference to function template instantiation 'std::_Tuple_val<_This>::_Tuple_val<Server&>(_Other)' being compiled
+                 with
+                 [
+                     _This=Server,
+                     _Other=Server &
+                 ]
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\tuple(233): note: see reference to function template instantiation 'std::_Tuple_val<_This>::_Tuple_val<Server&>(_Other)' being compiled
+                 with
+                 [
+                     _This=Server,
+                     _Other=Server &
+                 ]
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\memory(1636): note: see reference to function template instantiation 'std::tuple<Server>::tuple<Server&,,std::_Tuple_enable<std::tuple<>,std::tuple<>>::type>(_This2)' being compiled
+                 with
+                 [
+                     _This2=Server &
+                 ]
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\memory(1636): note: see reference to function template instantiation 'std::tuple<Server>::tuple<Server&,,std::_Tuple_enable<std::tuple<>,std::tuple<>>::type>(_This2)' being compiled
+                 with
+                 [
+                     _This2=Server &
+                 ]
+         c:\program files (x86)\microsoft visual studio 14.0\vc\include\thread(50): note: see reference to function template instantiation 'std::unique_ptr<std::tuple<Server>,std::default_delete<std::tuple<Server>>> std::make_unique<std::tuple<Server>,Server&>(Server &)' being compiled
+         c:\users\jflinn18\documents\github\p2pnetworkfinal1\p2pnetworkfinal\node.h(28): note: see reference to function template instantiation 'std::thread::thread<Server&,,void>(_Fn)' being compiled
+                 with
+                 [
+                     _Fn=Server &
+                 ]
+     1>Done Building Project "C:\Users\jflinn18\Documents\GitHub\P2PNetworkFinal1\P2PNetworkFinal\P2PNetworkFinal.vcxproj" (Rebuild target(s)) -- FAILED.
 
-Build succeeded.
+Build FAILED.
 
-Time Elapsed 00:00:01.21
+Time Elapsed 00:00:00.79
