@@ -51,6 +51,7 @@ public:
 		}
 	}
 
+	//Copy constructor
 	Server(const Server&server) {
 		*knownIPs = *server.knownIPs;
 		*database = *server.database;
@@ -62,17 +63,16 @@ public:
 		socket = NULL;
 	}
 
-	/*
 	void serverExecute(){
 		Socket *conn;
 		do {
 			conn = socket->sock_accept();
-			Node *node = new Node(conn);
-			std::thread *thr = new std::thread(*node);
+			Connect myConnection(conn);
+			std::thread *thr = new std::thread(myConnection);
 			thr->detach();
 		} while (true);
 	}
-	*/
+
 
 	//Allows server to send the connected client all IP addresses that have connected to the server
 	std::string sendClientAllIPs() {
@@ -86,17 +86,21 @@ public:
 		conn.msg_send(ipStream.str()); //send the client the formatted IP string
 	}
 
-	//DO WE NEED THIS???
-	void operator()() {
+	static void serverListen(Socket* conn) {
 		std::string msg;
-		std::cout << "server operator works!" << std::endl;
-		//do {
-			//msg = socket->msg_recv();
-
-			//NOTE: Check message, then query the database for data in the message, then send results
-
-		//} while (msg != "");
+		do {
+			msg = conn->msg_recv();
+			std::cout << msg << std::endl;
+		} while (msg != "");
 	}
+
+	struct Connect {
+		Socket* conn;
+		Connect(Socket*conn) { this->conn = conn; }
+		void operator()() {
+			serverListen(this->conn);
+		}
+	};
 };
 
 

@@ -9,12 +9,14 @@
 
 class Node {
 private:
-	Server *server;
-	Client *client;
 	std::set<std::string> *database;
 	std::set<std::string> *knownIPs;
+	Server *server;
+	Client *client;
 
 public:
+
+
 	Node(){
 		knownIPs = new std::set<std::string>;
 		database = new std::set<std::string>;
@@ -26,9 +28,9 @@ public:
 
 		Socket tempSock("tcp"); //to get current computer's id for client constructor
 		this->server = new Server(knownIPs, database); 
-		this->client = new Client(knownIPs, database, tempSock.getComputerIP());
-		runServer runS;
-		runClient runC;
+		this->client = new Client(knownIPs, server, tempSock.getComputerIP());
+		runServer runS(server);
+		runClient runC(client);
 		std::thread server_thread(runS);	//let server run on an independant thread
 		std::thread client_thread(runC);	//let client run on an independant thread
 		server_thread.join();
@@ -47,14 +49,24 @@ public:
 	}
 
 	struct runServer {
+		Server *server;
+		runServer(Server *server) { this->server = server; }
 		void operator()() {
 			std::cout << "This works for server" << std::endl;
+			do {
+				this->server->serverExecute();
+			} while (true);
 		}
 	};
 
 	struct runClient {
+		Client *client;
+		runClient(Client *client) { this->client = client; }
 		void operator()() {
 			std::cout << "This works for client" << std::endl;
+			do {
+				this->client->query();
+			} while (true);
 		}
 	};
 };

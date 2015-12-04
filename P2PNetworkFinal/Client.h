@@ -12,19 +12,19 @@ class Client {
 private:
 	std::vector<Socket*> connections;
 	std::set<std::string> *knownIPs;
-	std::set<std::string> *database;
+	Server* server;
 	std::string myIP;
 	std::mutex lock;			// Lock console for mutual exclusive access
 	const int port = 12345;
 
 public:
-	Client(std::set<std::string> *knownIPs, std::set<std::string> *database, std::string myIP) {
+	Client(std::set<std::string> *knownIPs, Server* server, std::string myIP) {
 		if (!Socket::Init()) {
 			std::cerr << "Fail to initialize WinSock!\n";
 			return;
 		}
 		this->knownIPs = knownIPs;
-		this->database = database;
+		this->server = server;
 		this->myIP = myIP;
 
 		//add a connection with the IP address that was given by the user
@@ -35,9 +35,10 @@ public:
 	}
 
 	Client(const Client&client) {
+		Server serve(*client.server);
 		connections = client.connections;
 		*knownIPs = *client.knownIPs;
-		*database = *client.database;
+		server = &serve;
 		myIP = client.myIP;
 	}
 
@@ -71,15 +72,10 @@ public:
 		exit(0);
 	}
 
-	void operator()() {
-		std::string msg;
-		int line = 0;
-		std::cout << "client operator works!" << std::endl;
-		//do {
-			//msg = console->GetInput();
-			//socket->msg_send(msg);
-			//console->UpdateMessageBuffer(msg);
-		//} while (true);
+	void query() {
+		std::string query;
+		std::cout << "Query for data: ";
+		std::cin >> query;
 	}
 };
 
