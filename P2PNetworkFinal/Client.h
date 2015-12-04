@@ -18,14 +18,13 @@ private:
 	const int port = 12345;
 
 public:
-	Client(std::set<std::string> *knownIPs, Server* server, std::string myIP) {
+	Client(std::set<std::string> *knownIPs, Server* server) {
 		if (!Socket::Init()) {
 			std::cerr << "Fail to initialize WinSock!\n";
 			return;
 		}
 		this->knownIPs = knownIPs;
 		this->server = server;
-		this->myIP = myIP;
 
 		//add a connection with the IP address that was given by the user
 		if (knownIPs->size() > 0) {
@@ -54,6 +53,8 @@ public:
 	void addConnection(std::string peerIP) {
 		//create socket
 		Socket* socket = new Socket("tcp");
+		this->myIP = socket->getComputerIP();
+
 		//connect socket to server
 		if (!socket->sock_connect(peerIP, port)) {
 			done("Could not connect to server");
@@ -64,9 +65,11 @@ public:
 			socket->msg_send(myIP); //sends the client's IP address to the server node
 			{
 				std::lock_guard<std::mutex> lk(lock);
-				std::vector<std::string> IPaddresses = getIPsFromString(socket->msg_recv());
+				std::string allIPs = socket->msg_recv();
+				std::vector<std::string> IPaddresses = getIPsFromString(allIPs);
 				for (int i = 0; i < IPaddresses.size(); i++) {
 					knownIPs->insert(IPaddresses[i]);
+					std::cout << IPaddresses[i] << std::endl;
 				}
 			}
 		}

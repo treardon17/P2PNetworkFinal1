@@ -28,9 +28,10 @@ public:
 		std::cin >> computerConnectIP;
 		knownIPs->insert(computerConnectIP); //add that IP address to the list of known IPs
 
-		Socket tempSock("tcp"); //to get current computer's id for client constructor
-		
-		this->client = new Client(knownIPs, server, tempSock.getComputerIP());
+		std::cout << "knownIPs: " << knownIPs << std::endl;
+		std::cout << "server: " << server << std::endl;
+
+		this->client = new Client(knownIPs, server);
 		runServer runS(server);
 		runClient runC(client);
 		std::thread server_thread(runS);	//let server run on an independant thread
