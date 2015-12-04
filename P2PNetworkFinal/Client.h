@@ -101,10 +101,10 @@ public:
 	}
 
 	void query() {
-		
-		//std::string query;
-		//std::cout << "Query for data: ";
-		//std::cin >> query;
+		executeClient();
+		std::string query;
+		std::cout << "Query for data: ";
+		std::cin >> query;
 	}
 };
 
