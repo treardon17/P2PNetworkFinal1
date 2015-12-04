@@ -33,10 +33,15 @@ public:
 			addConnection(connectIP);
 		}
 	}
-	~Client(){
-		delete knownIPs;
-		delete database;
+
+	Client(const Client&client) {
+		connections = client.connections;
+		*knownIPs = *client.knownIPs;
+		*database = *client.database;
+		myIP = client.myIP;
 	}
+
+	~Client(){ }
 
 	//adds a known IP to the Client's set of IPs
 	void addKnownIP(std::string newIP) {
@@ -69,11 +74,12 @@ public:
 	void operator()() {
 		std::string msg;
 		int line = 0;
-		do {
+		std::cout << "client operator works!" << std::endl;
+		//do {
 			//msg = console->GetInput();
 			//socket->msg_send(msg);
 			//console->UpdateMessageBuffer(msg);
-		} while (true);
+		//} while (true);
 	}
 };
 

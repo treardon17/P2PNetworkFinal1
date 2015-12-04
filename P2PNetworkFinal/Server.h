@@ -20,6 +20,14 @@ private:
 
 public:
 
+	int done(const std::string message)
+	{
+		Socket::Cleanup();
+		std::cout << message;
+		std::cin.get();
+		exit(0);
+	}
+
 	Server(std::set<std::string> *knownIPs, std::set<std::string> *database) {
 		this->knownIPs = knownIPs;
 		this->database = database;
@@ -41,6 +49,11 @@ public:
 		if (!socket->sock_listen(1)) {
 			done("Could not get socket to listen.");
 		}
+	}
+
+	Server(const Server&server) {
+		*knownIPs = *server.knownIPs;
+		*database = *server.database;
 	}
 
 	//Destructor
@@ -73,23 +86,16 @@ public:
 		conn.msg_send(ipStream.str()); //send the client the formatted IP string
 	}
 
-	int done(const std::string message)
-	{
-		Socket::Cleanup();
-		std::cout << message;
-		std::cin.get();
-		exit(0);
-	}
-
 	//DO WE NEED THIS???
 	void operator()() {
 		std::string msg;
-		do {
-			msg = socket->msg_recv();
+		std::cout << "server operator works!" << std::endl;
+		//do {
+			//msg = socket->msg_recv();
 
 			//NOTE: Check message, then query the database for data in the message, then send results
 
-		} while (msg != "");
+		//} while (msg != "");
 	}
 };
 

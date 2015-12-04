@@ -16,6 +16,8 @@ private:
 
 public:
 	Node(){
+		knownIPs = new std::set<std::string>;
+		database = new std::set<std::string>;
 		//get the ip address of the first computer to connect to from user
 		std::string computerConnectIP;
 		std::cout << "IP of computer to connect to: ";
@@ -25,18 +27,36 @@ public:
 		Socket tempSock("tcp"); //to get current computer's id for client constructor
 		this->server = new Server(knownIPs, database); 
 		this->client = new Client(knownIPs, database, tempSock.getComputerIP());
-		std::thread server_thread(*server);	//let server run on an independant thread
-		std::thread client_thread(*client);	//let client run on an independant thread
+		runServer runS;
+		runClient runC;
+		std::thread server_thread(runS);	//let server run on an independant thread
+		std::thread client_thread(runC);	//let client run on an independant thread
 		server_thread.join();
 		client_thread.join();
 	}
 
 	~Node(){
 		delete server;
+		server = NULL;
 		delete client;
+		client = NULL;
 		delete database;
+		database = NULL;
 		delete knownIPs;
+		knownIPs = NULL;
 	}
+
+	struct runServer {
+		void operator()() {
+			std::cout << "This works for server" << std::endl;
+		}
+	};
+
+	struct runClient {
+		void operator()() {
+			std::cout << "This works for client" << std::endl;
+		}
+	};
 };
 
 #endif
