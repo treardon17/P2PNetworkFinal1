@@ -21,31 +21,27 @@ public:
 		knownIPs = new std::set<std::string>;
 		database = new std::set<std::string>;
 
+		//server thread
+		this->server = new Server(knownIPs, database);	//start the server
+		runServer runS(server);							//functor to be run in the server thread
+		std::thread server_thread(runS);				//let server run on an independant thread
+
 		//get the ip address of the first computer to connect to from user
 		std::string computerConnectIP;
 		std::cout << "IP of computer to connect to: ";
 		std::cin >> computerConnectIP;
 		knownIPs->insert(computerConnectIP);			//add that IP address to the list of known IPs
 
-
-		//NEED TO MAKE CONNECTION HERE SO THAT IT DOESN'T HANG UP...
-		//OR DETACH THREAD
-
-
-		//server thread
-		this->server = new Server(knownIPs, database);	//start the server
-		runServer runS(server);
-		std::thread server_thread(runS);				//let server run on an independant thread
-
 		//client thread
-		this->client = new Client(knownIPs, server);
-		runClient runC(client);
+		this->client = new Client(knownIPs, server);	//start the client
+		runClient runC(client);							//functor to be run in the client thread
 		std::thread client_thread(runC);				//let client run on an independant thread
 
-		client_thread.join();
-		server_thread.join();
+		client_thread.join();							//sync the threads up
+		server_thread.join();							//
 	}
 
+	//deconstructor
 	~Node(){
 		delete server;
 		server = NULL;
@@ -57,6 +53,7 @@ public:
 		knownIPs = NULL;
 	}
 
+	//server functor run in thread
 	struct runServer {
 		Server *server;
 		runServer(Server *server) { this->server = server; }
@@ -65,12 +62,13 @@ public:
 		}
 	};
 
+	//client functor run in thread
 	struct runClient {
 		Client *client;
 		runClient(Client *client) { this->client = client; }
 		void operator()() {
 			do {
-				this->client->query();
+				this->client->chooseAction();
 			} while (true);
 		}
 	};

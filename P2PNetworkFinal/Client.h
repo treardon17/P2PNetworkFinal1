@@ -62,19 +62,30 @@ public:
 			done("Could not connect to server");
 		}
 		else {
-			std::cout << "Connection made!" << std::endl;
+			std::cout << "Initializing handshake..." << std::endl;
 			addKnownIP(peerIP);
 			socket->msg_send(myIP); //sends the client's IP address to the server node
 			{
 				std::lock_guard<std::mutex> lk(lock);
 				std::string allIPs = socket->msg_recv();
-				std::vector<std::string> IPaddresses = getIPsFromString(allIPs);
-				for (int i = 0; i < IPaddresses.size(); i++) {
-					knownIPs->insert(IPaddresses[i]);
-					std::cout << IPaddresses[i] << std::endl;
+				if (allIPs != "") {
+					std::cout << "Received response from peer!" << std::endl;
+					std::vector<std::string> IPaddresses = getIPsFromString(allIPs);
+					for (int i = 0; i < IPaddresses.size(); i++) {
+						//don't add this computer's address to the known IPs (it already knows its own IP)
+						if (IPaddresses[i] != myIP) { knownIPs->insert(IPaddresses[i]); }
+					}
 				}
 			}
 		}
+	}
+
+	//allows a user to add a new connection
+	void newConnection() {
+		std::cout << "Connect to IP: ";
+		std::string connectIP;
+		std::cin >> connectIP;
+		addConnection(connectIP);
 	}
 
 	std::vector<std::string> getIPsFromString(std::string IPstring) {
@@ -105,6 +116,39 @@ public:
 		std::string query;
 		std::cout << "Query for data: ";
 		std::cin >> query;
+	}
+
+	void chooseAction() {
+		std::vector<std::string> actions = { "Connect", "Query" };
+		std::cout << "Choose action to perform: " << std::endl;
+
+		//output the list of potential actions
+		for (int i = 0; i < actions.size(); i++) {
+			std::cout << (char)(i + 97) << ") " << actions[i] << std::endl;
+		}
+		std::cout << "Choice: ";
+
+		//error checking
+		char choice = 'a';
+		std::string chooseString = "";
+		std::cin >> chooseString;
+		if (chooseString.size() > 0) {
+			choice = chooseString[0];
+		}
+
+		//choices
+		switch (choice)
+		{
+		case 'a':
+			newConnection();
+			break;
+		case 'b':
+			query();
+			break;
+		default:
+			std::cout << "Could not perform action. Invalid input." << std::endl;
+			break;
+		}
 	}
 };
 

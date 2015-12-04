@@ -90,7 +90,7 @@ public:
 		std::string msg;
 		do {
 			msg = conn->msg_recv();
-			std::cout << msg << std::endl;
+			//std::cout << msg << std::endl; //debugging
 			if(!server->receivedIPFromClient){
 				std::mutex lock;
 				std::lock_guard<std::mutex> lk(lock);
