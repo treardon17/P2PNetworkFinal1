@@ -20,24 +20,20 @@ public:
 	Node(){
 		knownIPs = new std::set<std::string>;
 		database = new std::set<std::string>;
+
+		//server thread
 		this->server = new Server(knownIPs, database); //start the server
-		
-		//get the ip address of the first computer to connect to from user
-		std::string computerConnectIP;
-		std::cout << "IP of computer to connect to: ";
-		std::cin >> computerConnectIP;
-		knownIPs->insert(computerConnectIP); //add that IP address to the list of known IPs
-
-		std::cout << "knownIPs: " << knownIPs << std::endl;
-		std::cout << "server: " << server << std::endl;
-
-		this->client = new Client(knownIPs, server);
 		runServer runS(server);
-		runClient runC(client);
 		std::thread server_thread(runS);	//let server run on an independant thread
+		
+
+		//client thread
+		this->client = new Client(knownIPs, server);
+		runClient runC(client);
 		std::thread client_thread(runC);	//let client run on an independant thread
-		server_thread.join();
+
 		client_thread.join();
+		server_thread.join();
 	}
 
 	~Node(){
@@ -55,9 +51,7 @@ public:
 		Server *server;
 		runServer(Server *server) { this->server = server; }
 		void operator()() {
-			do {
-				this->server->serverExecute();
-			} while (true);
+			this->server->serverExecute();
 		}
 	};
 

@@ -40,7 +40,7 @@ public:
 		}
 
 		this->socket = new Socket("tcp"); //create tcp socket
-		
+
 		//socket bound to port
 		if (!socket->sock_bind("", port)) {
 			std::cerr << "Could not bind to port number " << port;
@@ -75,17 +75,15 @@ public:
 		} while (true);
 	}
 
-
 	//Allows server to send the connected client all IP addresses that have connected to the server
-	void sendClientAllIPs() {
+	void sendClientAllIPs(Socket* conn) {
 		std::ostringstream ipStream; //stream that takes in the ip addresses
 		std::set<std::string>::iterator setItr;
 		//formatting the IPs separated by commas
 		for (setItr = knownIPs->begin(); setItr != knownIPs->end(); setItr++) {
 			ipStream << *setItr << ",";
 		}
-		Socket conn = *socket->sock_accept();
-		conn.msg_send(ipStream.str()); //send the client the formatted IP string
+		conn->msg_send(ipStream.str());			//send the client the formatted IP string
 	}
 
 	static void serverListen(Socket* conn, Server* server) {
@@ -96,7 +94,7 @@ public:
 			if(!server->receivedIPFromClient){
 				std::mutex lock;
 				std::lock_guard<std::mutex> lk(lock);
-				server->sendClientAllIPs();
+				server->sendClientAllIPs(conn);
 				server->knownIPs->insert(msg);
 				server->receivedIPFromClient = true;
 			}
@@ -111,7 +109,7 @@ public:
 			this->myServer = myServer;
 		}
 		void operator()() {
-			serverListen(this->conn, this->myServer);
+			Server::serverListen(this->conn, this->myServer);
 		}
 	};
 };
