@@ -38,11 +38,6 @@ public:
 	~Client(){ }
 
 	void executeClient() {
-		//get the ip address of the first computer to connect to from user
-		std::string computerConnectIP;
-		std::cout << "IP of computer to connect to: ";
-		std::cin >> computerConnectIP;
-		knownIPs->insert(computerConnectIP); //add that IP address to the list of known IPs
 		//add a connection with the IP address that was given by the user
 		if (knownIPs->size() > 0) {
 			std::string connectIP = *knownIPs->begin();
