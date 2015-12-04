@@ -40,7 +40,7 @@ public:
 	void executeClient() {
 		//add a connection with the IP address that was given by the user
 		if (knownIPs->size() > 0) {
-			std::string connectIP = *knownIPs->begin();
+			std::string connectIP = *knownIPs->begin();						//NEED TO CHANGE THIS --> ONLY CHECKS THE FIRST IP
 			addConnection(connectIP);
 		}
 	}
@@ -69,7 +69,7 @@ public:
 				std::lock_guard<std::mutex> lk(lock);
 				std::string allIPs = socket->msg_recv();
 				if (allIPs != "") {
-					std::cout << "Received response from peer!" << std::endl;
+					std::cout << "Received response from " << peerIP << std::endl;
 					std::vector<std::string> IPaddresses = getIPsFromString(allIPs);
 					for (int i = 0; i < IPaddresses.size(); i++) {
 						//don't add this computer's address to the known IPs (it already knows its own IP)
@@ -112,7 +112,8 @@ public:
 	}
 
 	void query() {
-		executeClient();
+		executeClient();					//CHANGE THIS --> EXECUTE CLIENT ON DIFFERENT IP ADDRESSES EVERY TIME
+											//TAKE A PARAMETER OF INTEGER OR SOMETHING
 		std::string query;
 		std::cout << "Query for data: ";
 		std::cin >> query;
