@@ -119,7 +119,7 @@ public:
 	}
 
 	void chooseAction() {
-		std::vector<std::string> actions = { "Connect", "Query" };
+		std::vector<std::string> actions = { "Connect to additional peer", "Query for data" };
 		std::cout << "Choose action to perform: " << std::endl;
 
 		//output the list of potential actions

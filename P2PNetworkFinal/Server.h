@@ -79,6 +79,13 @@ public:
 	void sendClientAllIPs(Socket* conn) {
 		std::ostringstream ipStream; //stream that takes in the ip addresses
 		std::set<std::string>::iterator setItr;
+
+		//ensure at least this computer's IP address is in the knownIPs
+		if (knownIPs->size() == 0) {
+			std::lock_guard<std::mutex> lk(lock);
+			knownIPs->insert(conn->getComputerIP());
+		}
+
 		//formatting the IPs separated by commas
 		for (setItr = knownIPs->begin(); setItr != knownIPs->end(); setItr++) {
 			ipStream << *setItr << ",";
