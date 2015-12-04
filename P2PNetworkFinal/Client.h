@@ -37,6 +37,14 @@ public:
 
 	~Client(){ }
 
+	void executeClient() {
+		//add a connection with the IP address that was given by the user
+		if (knownIPs->size() > 0) {
+			std::string connectIP = *knownIPs->begin();
+			addConnection(connectIP);
+		}
+	}
+
 	//adds a known IP to the Client's set of IPs
 	void addKnownIP(std::string newIP) {
 		std::lock_guard<std::mutex> lk(lock);
@@ -44,7 +52,7 @@ public:
 	}
 
 	//adds a socket connection to the vector of connections
-	Socket* addConnection(std::string peerIP) {
+	void addConnection(std::string peerIP) {
 		//create socket
 		Socket* socket = new Socket("tcp");
 		this->myIP = socket->getComputerIP();
@@ -66,13 +74,10 @@ public:
 					for (int i = 0; i < IPaddresses.size(); i++) {
 						//don't add this computer's address to the known IPs (it already knows its own IP)
 						if (IPaddresses[i] != myIP) { knownIPs->insert(IPaddresses[i]); }
-					}//endfor
-				}//endif
-			}//endlock
-		}//endelse
-
-		connections.push_back(socket);
-		return socket;
+					}
+				}
+			}
+		}
 	}
 
 	//allows a user to add a new connection
@@ -107,36 +112,10 @@ public:
 	}
 
 	void query() {
-		Socket *conn;
-		if (knownIPs->size() > 0) {
-			std::string connectIP = *knownIPs->begin();
-			conn = addConnection(connectIP);
-		}
+		executeClient();
 		std::string query;
 		std::cout << "Query for data: ";
 		std::cin >> query;
-
-		std::string msg = "";
-		if (conn != NULL) {
-			msg = conn->msg_recv();
-
-			if (msg == "Ready for query") {
-				conn->msg_send(query);
-			}
-			else {
-				std::cout << "Incorrect server response\n";
-				conn->sock_close();
-			}
-
-			msg = conn->msg_recv();
-
-			if (msg == "Have it!!!")
-				std::cout << "Successful Query\n";
-			else
-				std::cout << "Unsuccessful Query\n";
-
-			conn->sock_close();
-		}
 	}
 
 	void chooseAction() {
