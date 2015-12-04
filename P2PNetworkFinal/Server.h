@@ -51,6 +51,10 @@ public:
 		if (!socket->sock_listen(1)) {
 			done("Could not get socket to listen.");
 		}
+
+		// This will populate the database with 0-9
+		// will remove when we check data redundancy from an external source.
+		populateDatabase(); 
 	}
 
 	//Copy constructor
@@ -63,6 +67,14 @@ public:
 	~Server() {
 		delete socket;
 		socket = NULL;
+	}
+
+	void populateDatabase() {
+		for (int i = 0; i < 10; i++) {
+			std::ostringstream mystring;
+			mystring << i;
+			this->database->insert(mystring.str());
+		}
 	}
 
 	void serverExecute(){
@@ -105,6 +117,21 @@ public:
 				server->knownIPs->insert(msg);
 				server->receivedIPFromClient = true;
 			}
+
+			msg = "Ready for query.";
+			conn->msg_send(msg);
+			
+			msg = conn->msg_recv();
+
+			if (msg != "") {
+				std::set<std::string>::iterator it;
+				for (it = server->database->begin(); it != server->database->end(); it++){
+					if (*it == msg) {
+						conn->msg_send("Have it!!!");
+					}
+				}
+			}
+				
 		} while (msg != "");
 	}
 
