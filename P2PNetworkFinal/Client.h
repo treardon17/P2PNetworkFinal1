@@ -59,6 +59,7 @@ public:
 			done("Could not connect to server");
 		}
 		else {
+			std::cout << "Connection made!" << std::endl;
 			addKnownIP(peerIP);
 			socket->msg_send(myIP); //sends the client's IP address to the server node
 		}

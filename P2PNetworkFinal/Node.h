@@ -20,6 +20,8 @@ public:
 	Node(){
 		knownIPs = new std::set<std::string>;
 		database = new std::set<std::string>;
+		this->server = new Server(knownIPs, database); //start the server
+		
 		//get the ip address of the first computer to connect to from user
 		std::string computerConnectIP;
 		std::cout << "IP of computer to connect to: ";
@@ -27,7 +29,7 @@ public:
 		knownIPs->insert(computerConnectIP); //add that IP address to the list of known IPs
 
 		Socket tempSock("tcp"); //to get current computer's id for client constructor
-		this->server = new Server(knownIPs, database); 
+		
 		this->client = new Client(knownIPs, server, tempSock.getComputerIP());
 		runServer runS(server);
 		runClient runC(client);
@@ -52,7 +54,6 @@ public:
 		Server *server;
 		runServer(Server *server) { this->server = server; }
 		void operator()() {
-			std::cout << "This works for server" << std::endl;
 			do {
 				this->server->serverExecute();
 			} while (true);
@@ -63,7 +64,6 @@ public:
 		Client *client;
 		runClient(Client *client) { this->client = client; }
 		void operator()() {
-			std::cout << "This works for client" << std::endl;
 			do {
 				this->client->query();
 			} while (true);
