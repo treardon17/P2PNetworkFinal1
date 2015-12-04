@@ -15,7 +15,8 @@ private:
 	std::set<std::string> *knownIPs;
 	std::set<std::string> *database;
 	Socket* socket;
-	std::mutex lock;			// Lock console for mutual exclusive access
+	std::mutex lock;					// Lock console for mutual exclusive access
+	bool receivedIPFromClient;
 	const int port = 12345;
 
 public:
@@ -31,6 +32,7 @@ public:
 	Server(std::set<std::string> *knownIPs, std::set<std::string> *database) {
 		this->knownIPs = knownIPs;
 		this->database = database;
+		this->receivedIPFromClient = false;
 
 		if (!Socket::Init()) {
 			std::cerr << "Fail to initialize WinSock!\n";
@@ -67,7 +69,7 @@ public:
 		Socket *conn;
 		do {
 			conn = socket->sock_accept();
-			Connect myConnection(conn);
+			Connect myConnection(conn, this);
 			std::thread *thr = new std::thread(myConnection);
 			thr->detach();
 		} while (true);
@@ -75,7 +77,7 @@ public:
 
 
 	//Allows server to send the connected client all IP addresses that have connected to the server
-	std::string sendClientAllIPs() {
+	void sendClientAllIPs() {
 		std::ostringstream ipStream; //stream that takes in the ip addresses
 		std::set<std::string>::iterator setItr;
 		//formatting the IPs separated by commas
@@ -86,19 +88,30 @@ public:
 		conn.msg_send(ipStream.str()); //send the client the formatted IP string
 	}
 
-	static void serverListen(Socket* conn) {
+	static void serverListen(Socket* conn, Server* server) {
 		std::string msg;
 		do {
 			msg = conn->msg_recv();
 			std::cout << msg << std::endl;
+			if(!server->receivedIPFromClient){
+				std::mutex lock;
+				std::lock_guard<std::mutex> lk(lock);
+				server->sendClientAllIPs();
+				server->knownIPs->insert(msg);
+				server->receivedIPFromClient = true;
+			}
 		} while (msg != "");
 	}
 
 	struct Connect {
 		Socket* conn;
-		Connect(Socket*conn) { this->conn = conn; }
+		Server* myServer;
+		Connect(Socket*conn, Server* myServer) { 
+			this->conn = conn; 
+			this->myServer = myServer;
+		}
 		void operator()() {
-			serverListen(this->conn);
+			serverListen(this->conn, this->myServer);
 		}
 	};
 };

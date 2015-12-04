@@ -62,7 +62,29 @@ public:
 			std::cout << "Connection made!" << std::endl;
 			addKnownIP(peerIP);
 			socket->msg_send(myIP); //sends the client's IP address to the server node
+			{
+				std::lock_guard<std::mutex> lk(lock);
+				std::vector<std::string> IPaddresses = getIPsFromString(socket->msg_recv());
+				for (int i = 0; i < IPaddresses.size(); i++) {
+					knownIPs->insert(IPaddresses[i]);
+				}
+			}
 		}
+	}
+
+	std::vector<std::string> getIPsFromString(std::string IPstring) {
+		std::vector<std::string> IPaddresses;
+		std::string currentIP = "";
+		for (int i = 0; i < IPstring.size; i++) {
+			if (IPstring[i] == ',') {
+				IPaddresses.push_back(currentIP);
+				currentIP = "";
+			}
+			else {
+				currentIP += IPstring[i];
+			}
+		}
+		return IPaddresses;
 	}
 
 	int done(const std::string message)
@@ -74,9 +96,10 @@ public:
 	}
 
 	void query() {
-		std::string query;
-		std::cout << "Query for data: ";
-		std::cin >> query;
+		
+		//std::string query;
+		//std::cout << "Query for data: ";
+		//std::cin >> query;
 	}
 };
 
