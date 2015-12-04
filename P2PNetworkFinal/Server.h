@@ -98,13 +98,28 @@ public:
 		do {
 			msg = conn->msg_recv();
 			//std::cout << msg << std::endl; //debugging
-			if(!server->receivedIPFromClient){
+			if (!server->receivedIPFromClient) {
 				std::mutex lock;
 				std::lock_guard<std::mutex> lk(lock);
 				server->sendClientAllIPs(conn);
 				server->knownIPs->insert(msg);
 				server->receivedIPFromClient = true;
 			}
+
+			msg = "Ready for query.";
+			conn->msg_send(msg);
+
+			msg = conn->msg_recv();
+
+			if (msg != "") {
+				std::set<std::string>::iterator it;
+				for (it = server->database->begin(); it != server->database->end(); it++) {
+					if (*it == msg) {
+						conn->msg_send("Have it!!!");
+					}
+				}
+			}
+
 		} while (msg != "");
 	}
 
