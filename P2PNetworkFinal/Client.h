@@ -75,7 +75,7 @@ public:
 	std::vector<std::string> getIPsFromString(std::string IPstring) {
 		std::vector<std::string> IPaddresses;
 		std::string currentIP = "";
-		for (int i = 0; i < IPstring.size; i++) {
+		for (int i = 0; i < IPstring.size(); i++) {
 			if (IPstring[i] == ',') {
 				IPaddresses.push_back(currentIP);
 				currentIP = "";
