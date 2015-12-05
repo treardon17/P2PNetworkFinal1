@@ -107,35 +107,43 @@ public:
 	}
 
 	void query() {
-		Socket *conn;
-		if (knownIPs->size() > 0) {
-			std::string connectIP = *knownIPs->begin();
-			conn = addConnection(connectIP);
-		}
-		std::string query;
-		std::cout << "Query for data: ";
-		std::cin >> query;
-
-		std::string msg = "";
-		if (conn != NULL) {
-			msg = conn->msg_recv();
-
-			if (msg == "Ready for query.") {
-				conn->msg_send(query);
+		std::set<std::string>::iterator it = knownIPs->begin();
+		while(it != knownIPs->end()){
+			Socket *conn;
+			if (knownIPs->size() > 0) {
+				std::string connectIP = *knownIPs->begin();
+				conn = addConnection(connectIP);
 			}
-			else {
-				std::cout << "Incorrect server response\n";
+			std::string query;
+			std::cout << "Query for data: ";
+			std::cin >> query;
+
+			std::string msg = "";
+			if (conn != NULL) {
+				msg = conn->msg_recv();
+
+				if (msg == "Ready for query.") {
+					conn->msg_send(query);
+				}
+				else {
+					std::cout << "Incorrect server response\n";
+					conn->sock_close();
+				}
+
+				msg = conn->msg_recv();
+
+				if (msg == "Have it!!!") {
+					//if the data was found, break from the loop
+					std::cout << "Successful Query\n";
+					break;
+				}
+				else {
+					//if the data wasn't found, try the next IP
+					std::cout << "Unsuccessful Query\n";
+					it++;
+				}
 				conn->sock_close();
 			}
-
-			msg = conn->msg_recv();
-
-			if (msg == "Have it!!!")
-				std::cout << "Successful Query\n";
-			else
-				std::cout << "Unsuccessful Query\n";
-
-			conn->sock_close();
 		}
 	}
 
