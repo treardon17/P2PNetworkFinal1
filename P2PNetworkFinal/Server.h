@@ -8,6 +8,9 @@
 #include <sstream>
 #include <thread>
 #include <mutex>
+#include <sql.h>
+#include <sqlext.h>
+#include <stdlib.h>
 #include "Socket.h"
 
 class Server {
@@ -103,6 +106,12 @@ public:
 	}
 
 	static void serverListen(Socket* conn, Server* server) {
+
+		//ADD MYSQL DATABASE CONNECTION HERE
+
+
+		//END MYSQL INSERT
+
 		std::string msg;
 		do {
 			msg = conn->msg_recv();
@@ -139,6 +148,9 @@ public:
 	}
 
 	std::string queryFromClient(std::string clientQuery) {
+
+		//ADD MYSQL DATABASE CONNECTION HERE (local database)
+
 		std::set<std::string>::iterator it;
 		for (it = database->begin(); it != database->end(); it++) {
 			if (*it == clientQuery) {
