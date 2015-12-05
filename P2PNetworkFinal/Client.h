@@ -77,10 +77,10 @@ public:
 
 	//allows a user to add a new connection
 	void newConnection() {
-		std::cout << "Connect to IP: ";
+		std::cout << "Add new IP: ";
 		std::string connectIP;
 		std::cin >> connectIP;
-		addConnection(connectIP);
+		addKnownIP(connectIP);
 	}
 
 	std::vector<std::string> getIPsFromString(std::string IPstring) {
@@ -148,7 +148,7 @@ public:
 	}
 
 	void chooseAction() {
-		std::vector<std::string> actions = { "Connect to additional peer", "Query for data" };
+		std::vector<std::string> actions = { "Add new peer", "Query for data" };
 		std::cout << "Choose action to perform: " << std::endl;
 
 		//output the list of potential actions
