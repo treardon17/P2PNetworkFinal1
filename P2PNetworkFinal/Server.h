@@ -16,7 +16,6 @@ private:
 	std::set<std::string> *database;
 	Socket* socket;
 	std::mutex lock;					// Lock console for mutual exclusive access
-	bool receivedIPFromClient;
 	const int port = 12345;
 
 public:
@@ -32,7 +31,6 @@ public:
 	Server(std::set<std::string> *knownIPs, std::set<std::string> *database) {
 		this->knownIPs = knownIPs;
 		this->database = database;
-		this->receivedIPFromClient = false;
 
 		if (!Socket::Init()) {
 			std::cerr << "Fail to initialize WinSock!\n";
@@ -109,13 +107,11 @@ public:
 		do {
 			msg = conn->msg_recv();
 			//std::cout << msg << std::endl; //debugging
-			if (!server->receivedIPFromClient) {
-				std::mutex lock;
-				std::lock_guard<std::mutex> lk(lock);
-				server->sendClientAllIPs(conn);
-				server->knownIPs->insert(msg);
-				//server->receivedIPFromClient = true;
-			}
+
+			std::mutex lock;
+			std::lock_guard<std::mutex> lk(lock);
+			server->sendClientAllIPs(conn);
+			server->knownIPs->insert(msg);
 
 			msg = "Ready for query.";
 			conn->msg_send(msg);	//server response
@@ -140,6 +136,20 @@ public:
 			}
 
 		} while (msg != "");
+	}
+
+	std::string queryFromClient(std::string clientQuery) {
+		std::set<std::string>::iterator it;
+		for (it = database->begin(); it != database->end(); it++) {
+			if (*it == clientQuery) {
+				//if the query was a success, return a success message
+				return "Successful Query";
+				break;
+			}
+		}
+
+		//if the data wasn't found return an unsuccessful query
+		return "Unsuccessful Query";
 	}
 
 	struct Connect {

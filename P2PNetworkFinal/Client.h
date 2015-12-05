@@ -51,7 +51,8 @@ public:
 
 		//connect socket to server
 		if (!socket->sock_connect(peerIP, port)) {
-			done("Could not connect to server");
+			std::cerr << "Could not connect to server" << std::endl;
+			return NULL;
 		}
 		else {
 			std::cout << "Initializing handshake..." << std::endl;
@@ -107,9 +108,13 @@ public:
 	}
 
 	void listKnownIPs() {
+		Socket tempSock("tcp"); //for getting the IP of the current computer
+		myIP = tempSock.getComputerIP();
 		std::set<std::string>::iterator it;
 		int counter = 1;
 		std::cout << "---------------------------------------" << std::endl;
+		std::cout << "My IP: " << myIP << std::endl << std::endl;
+		std::cout << "Known IPs:" << std::endl;
 		for (it = knownIPs->begin(); it != knownIPs->end(); it++) {
 			std::cout << "\t" << counter++ << ") " << *it << std::endl;
 		}
@@ -117,6 +122,20 @@ public:
 	}
 
 	void query() {
+
+		//MUST ADD ABILITY TO QUERY OWN SERVER
+
+		std::string query;
+		std::cout << "Query for data: ";
+		std::cin >> query;
+		std::string nodeServerResponse = server->queryFromClient(query);
+
+		//if the local database has the data, then stop the function and don't try to look at other peers
+		if (nodeServerResponse == "Successful Query") { 
+			std::cout << "Found data on local database." << std::endl;
+			return; 
+		}
+
 		std::set<std::string>::iterator it = knownIPs->begin();
 		while(it != knownIPs->end()){
 			Socket *conn;
@@ -124,10 +143,7 @@ public:
 				std::string connectIP = *it;
 				conn = addConnection(connectIP);
 			}
-			std::string query;
-			std::cout << "Query for data: ";
-			std::cin >> query;
-
+			
 			std::string msg = "";
 			if (conn != NULL) {
 				msg = conn->msg_recv();
@@ -153,6 +169,9 @@ public:
 					it++;
 				}
 				conn->sock_close();
+			}
+			else {
+				std::cout << "Connection not valid" << std::endl;
 			}
 		}
 	}
