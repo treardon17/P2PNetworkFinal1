@@ -111,7 +111,7 @@ public:
 		while(it != knownIPs->end()){
 			Socket *conn;
 			if (knownIPs->size() > 0) {
-				std::string connectIP = *knownIPs->begin();
+				std::string connectIP = *it;
 				conn = addConnection(connectIP);
 			}
 			std::string query;
