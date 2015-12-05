@@ -129,6 +129,7 @@ public:
 					if (*it == msg) {
 						conn->msg_send("Have it!!!");
 						found = true;
+						break;
 					}
 				}
 			}
