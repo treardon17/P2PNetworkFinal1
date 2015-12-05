@@ -106,6 +106,16 @@ public:
 		exit(0);
 	}
 
+	void listKnownIPs() {
+		std::set<std::string>::iterator it;
+		int counter = 1;
+		std::cout << "---------------------------------------" << std::endl;
+		for (it = knownIPs->begin(); it != knownIPs->end(); it++) {
+			std::cout << "\t" << counter++ << ") " << *it << std::endl;
+		}
+		std::cout << "---------------------------------------" << std::endl;
+	}
+
 	void query() {
 		std::set<std::string>::iterator it = knownIPs->begin();
 		while(it != knownIPs->end()){
@@ -148,7 +158,7 @@ public:
 	}
 
 	void chooseAction() {
-		std::vector<std::string> actions = { "Add new peer", "Query for data" };
+		std::vector<std::string> actions = { "Add new peer", "Query for data", "List known IPs" };
 		std::cout << "Choose action to perform: " << std::endl;
 
 		//output the list of potential actions
@@ -174,10 +184,14 @@ public:
 		case 'b':
 			query();
 			break;
+		case 'c':
+			listKnownIPs();
+			break;
 		default:
 			std::cout << "Could not perform action. Invalid input." << std::endl;
 			break;
 		}
+		std::cout << std::endl;
 	}
 };
 
