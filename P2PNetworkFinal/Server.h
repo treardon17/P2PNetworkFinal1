@@ -51,6 +51,8 @@ public:
 		if (!socket->sock_listen(1)) {
 			done("Could not get socket to listen.");
 		}
+
+		populateDatabase();
 	}
 
 	//Copy constructor
@@ -63,6 +65,15 @@ public:
 	~Server() {
 		delete socket;
 		socket = NULL;
+	}
+
+	void populateDatabase() {
+		std::lock_guard<std::mutex> lk(lock);
+		for (int i = 0; i < 10; i++) {
+			std::ostringstream myInt;
+			myInt << i;
+			database->insert(myInt.str());
+		}
 	}
 
 	void serverExecute(){
@@ -107,17 +118,24 @@ public:
 			}
 
 			msg = "Ready for query.";
-			conn->msg_send(msg);
+			conn->msg_send(msg);	//server response
 
-			msg = conn->msg_recv();
+			msg = conn->msg_recv(); // client query
+			bool found = false;
 
 			if (msg != "") {
 				std::set<std::string>::iterator it;
 				for (it = server->database->begin(); it != server->database->end(); it++) {
 					if (*it == msg) {
 						conn->msg_send("Have it!!!");
+						found = true;
 					}
 				}
+			}
+
+			//if the data was not found
+			if (!found) {
+				conn->msg_send("Don't have it.");
 			}
 
 		} while (msg != "");
