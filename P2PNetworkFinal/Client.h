@@ -120,7 +120,7 @@ public:
 		if (conn != NULL) {
 			msg = conn->msg_recv();
 
-			if (msg == "Ready for query") {
+			if (msg == "Ready for query.") {
 				conn->msg_send(query);
 			}
 			else {
