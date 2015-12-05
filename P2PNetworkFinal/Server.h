@@ -114,7 +114,7 @@ public:
 				std::lock_guard<std::mutex> lk(lock);
 				server->sendClientAllIPs(conn);
 				server->knownIPs->insert(msg);
-				server->receivedIPFromClient = true;
+				//server->receivedIPFromClient = true;
 			}
 
 			msg = "Ready for query.";
