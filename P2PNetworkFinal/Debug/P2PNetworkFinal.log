@@ -1,19 +1,27 @@
-﻿Build started 12/7/2015 1:02:53 PM.
+﻿Build started 12/7/2015 1:48:41 PM.
      1>Project "C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\P2PNetworkFinal\P2PNetworkFinal.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
          main.cpp
      1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\socket.h(266): warning C4018: '<': signed/unsigned mismatch
      1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\mysql-connector-1.1.6\include\cppconn\sqlstring.h(39): warning C4251: 'sql::SQLString::realStr': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of class 'sql::SQLString'
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\mysql-connector-1.1.6\include\cppconn\exception.h(61): warning C4251: 'sql::SQLException::sql_state': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of class 'sql::SQLException'
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\mysql-connector-1.1.6\include\cppconn\exception.h(145): warning C4251: 'sql::SQLUnsupportedOptionException::option': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' needs to have dll-interface to be used by clients of struct 'sql::SQLUnsupportedOptionException'
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\server.h(121): warning C4101: 'res': unreferenced local variable
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\server.h(119): warning C4101: 'con': unreferenced local variable
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\server.h(120): warning C4101: 'stmt': unreferenced local variable
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\server.h(147): warning C4101: 'e': unreferenced local variable
      1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\client.h(67): warning C4018: '<': signed/unsigned mismatch
      1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\client.h(90): warning C4018: '<': signed/unsigned mismatch
      1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\client.h(184): warning C4018: '<': signed/unsigned mismatch
      1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\socket.h(344): warning C4715: 'Socket::getComputerIP': not all control paths return a value
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\Debug\P2PNetworkFinal.exe" /INCREMENTAL /NOLOGO /LIBPATH:c:/Irvine /LIBPATH:"C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\\P2PNetworkFinal\mysql-connector-1.1.6\lib" mysqlcppconn.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\Debug\P2PNetworkFinal.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\Debug\P2PNetworkFinal.lib" /MACHINE:X86 Debug\main.obj
-         P2PNetworkFinal.vcxproj -> C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\Debug\P2PNetworkFinal.exe
-     1>Done Building Project "C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\P2PNetworkFinal\P2PNetworkFinal.vcxproj" (Build target(s)).
+     1>main.obj : error LNK2019: unresolved external symbol __imp__get_driver_instance referenced in function "public: static void __cdecl Server::serverListen(class Socket *,class Server *)" (?serverListen@Server@@SAXPAVSocket@@PAV1@@Z)
+     1>C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\\P2PNetworkFinal\mysql-connector-1.1.6\lib\mysqlcppconn.lib : warning LNK4272: library machine type 'x64' conflicts with target machine type 'X86'
+     1>C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\Debug\P2PNetworkFinal.exe : fatal error LNK1120: 1 unresolved externals
+     1>Done Building Project "C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\P2PNetworkFinal\P2PNetworkFinal.vcxproj" (Build target(s)) -- FAILED.
 
-Build succeeded.
+Build FAILED.
 
-Time Elapsed 00:00:01.26
+Time Elapsed 00:00:01.21
