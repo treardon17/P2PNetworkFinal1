@@ -8,6 +8,7 @@
 #include <sstream>
 #include <thread>
 #include <mutex>
+#include "sqlite3.h"
 #include "Socket.h"
 
 //DATABASE CONNECTION LIBRARIES
