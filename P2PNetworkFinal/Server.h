@@ -1,14 +1,13 @@
 #ifndef __SERVER_H__
 #define __SERVER_H__
 
-#include<iostream>
+#include <iostream>
 #include <string>
 #include <iterator>
 #include <set>
 #include <sstream>
 #include <thread>
 #include <mutex>
-#include <stdlib.h>
 #include "Socket.h"
 
 //DATABASE CONNECTION LIBRARIES
