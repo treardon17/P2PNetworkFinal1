@@ -36,4 +36,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\Desktop\sqlite-shell-win32-x86-3090200\localDB.db">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

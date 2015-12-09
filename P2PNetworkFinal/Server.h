@@ -109,11 +109,11 @@ public:
 
 	static void serverListen(Socket* conn, Server* server) {
 
-		//ADD MYSQL DATABASE CONNECTION HERE
+		//ADD DATABASE CONNECTION HERE
 		
 		
 		
-		//END MYSQL INSERT
+		//END INSERT
 
 		std::string msg;
 		do {
@@ -152,7 +152,24 @@ public:
 
 	std::string queryFromClient(std::string clientQuery) {
 
-		//ADD MYSQL DATABASE CONNECTION HERE (local database)
+		//ADD DATABASE CONNECTION HERE (local database)
+
+		sqlite3 *db;
+		char *zErrMsg = 0;
+		int rc;
+
+		rc = sqlite3_open("test.db", &db);
+
+		if (rc) {
+			fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+			exit(0);
+		}
+		else {
+			fprintf(stderr, "Opened database successfully\n");
+		}
+		sqlite3_close(db);
+
+		//END DATABASE CONNECTION
 
 		std::set<std::string>::iterator it;
 		for (it = database->begin(); it != database->end(); it++) {
