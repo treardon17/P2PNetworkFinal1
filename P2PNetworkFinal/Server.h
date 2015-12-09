@@ -18,7 +18,8 @@
 class Server {
 private:
 	std::set<std::string> *knownIPs;
-	std::set<std::string> *database;
+	//std::set<std::string> *database;
+	sqlite3* localDatabase;
 	Socket* socket;
 	std::mutex lock;					// Lock console for mutual exclusive access
 	const int port = 12345;
@@ -33,9 +34,9 @@ public:
 		exit(0);
 	}
 
-	Server(std::set<std::string> *knownIPs, std::set<std::string> *database) {
+	Server(std::set<std::string> *knownIPs, sqlite3 *localDatabase) {
 		this->knownIPs = knownIPs;
-		this->database = database;
+		this->localDatabase = localDatabase;
 
 		if (!Socket::Init()) {
 			std::cerr << "Fail to initialize WinSock!\n";
@@ -61,7 +62,20 @@ public:
 	//Copy constructor
 	Server(const Server&server) {
 		*knownIPs = *server.knownIPs;
-		*database = *server.database;
+		//*database = *server.localDatabase;
+
+		char *zErrMsg = 0;
+		int rc;
+
+		rc = sqlite3_open("localDB.db", &localDatabase);
+
+		if (rc) {
+			fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(localDatabase));
+			exit(0);
+		}
+		else {
+			fprintf(stderr, "Opened database successfully\n");
+		}
 	}
 
 	//Destructor
@@ -70,12 +84,88 @@ public:
 		socket = NULL;
 	}
 
+	static int callback(void *data, int argc, char **argv, char **azColName) {
+		int i;
+		fprintf(stderr, "%s: ", (const char*)data);
+		for (i = 0; i<argc; i++) {
+			printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+		}
+		printf("\n");
+		return 0;
+	}
+
+	//makes the DATA table in the localDatabase
+	bool makeTable() {
+		//SQL to make table
+		std::string sql = "CREATE TABLE DATA("  \
+			"ID INT PRIMARY KEY     NOT NULL," \
+			"NAME           TEXT    NOT NULL," \
+			"AGE            INT     NOT NULL);";
+
+		//executes SQL statement
+		if (executeSQL(sql)) {
+			std::cout << "SERVER: created table" << std::endl;
+			return true;
+		}
+		else {
+			std::cout << "SERVER: failed to create table" << std::endl;
+			return false;
+		}
+	}
+
+	bool tableExists() {
+		std::string sql = "SELECT * FROM DATA";
+		return executeSQL(sql);
+	}
+
+	bool executeSQL(std::string sql) {
+		char *zErrMsg = 0;
+		const char* data = "Callback function called";
+		int rc;
+
+		/* Execute SQL statement */
+		rc = sqlite3_exec(localDatabase, strdup(sql.c_str()), callback, 0, &zErrMsg);
+		if (rc != SQLITE_OK) {
+			fprintf(stderr, "SQL error: %s\n", zErrMsg);
+			sqlite3_free(zErrMsg);
+		}
+		else {
+			sqlite3_free(zErrMsg);
+			return true;
+		}
+		return false;
+	}
+
 	void populateDatabase() {
 		std::lock_guard<std::mutex> lk(lock);
+
+		/*
 		for (int i = 0; i < 10; i++) {
 			std::ostringstream myInt;
 			myInt << i;
-			database->insert(myInt.str());
+			//database->insert(myInt.str());
+		}
+		*/
+
+		//INSERT STUFF INTO THE SQLITE DATABASE!!
+		bool tableExists = false;
+
+		if (this->tableExists()) {
+			tableExists = true;
+		}
+		else {
+			tableExists = makeTable();
+		}
+
+		//if the table exists, then we can add stuff to it
+		if (tableExists) {
+
+			//do stuff with table!!!
+
+
+		}
+		else {
+			std::cout << "Could not populate database." << std::endl;
 		}
 	}
 
@@ -109,12 +199,6 @@ public:
 
 	static void serverListen(Socket* conn, Server* server) {
 
-		//ADD DATABASE CONNECTION HERE
-		
-		
-		
-		//END INSERT
-
 		std::string msg;
 		do {
 			msg = conn->msg_recv();
@@ -131,6 +215,7 @@ public:
 			msg = conn->msg_recv(); // client query
 			bool found = false;
 
+			/*
 			if (msg != "") {
 				std::set<std::string>::iterator it;
 				for (it = server->database->begin(); it != server->database->end(); it++) {
@@ -141,36 +226,61 @@ public:
 					}
 				}
 			}
+			*/
+
+
+			//SQLITE STUFF HERE
+			char *zErrMsg = 0;
+			const char* data = "Callback function called";
+			char* sql = strdup(msg.c_str()); //query from client
+			int rc;
+
+			rc = sqlite3_exec(server->localDatabase, sql, callback, (void*)data, &zErrMsg);
+
+			//if the DATA Table does not exist, make it
+			if (rc != SQLITE_OK) {
+				fprintf(stderr, "SQL error: %s\n", zErrMsg);
+				conn->msg_send("Don't have it.");
+			}
+			else {
+				conn->msg_send("Have it!");
+			}
+			//ENDSQLITE STUFF HERE
 
 			//if the data was not found
+			/*
 			if (!found) {
 				conn->msg_send("Don't have it.");
 			}
-
+			*/
 		} while (msg != "");
 	}
 
 	std::string queryFromClient(std::string clientQuery) {
 
 		//ADD DATABASE CONNECTION HERE (local database)
-
-		sqlite3 *db;
+		//SQLITE STUFF HERE
 		char *zErrMsg = 0;
+		const char* data = "Callback function called";
+		char* sql = strdup(clientQuery.c_str()); //query from client
 		int rc;
 
-		rc = sqlite3_open("localDB.db", &db);
+		rc = sqlite3_exec(localDatabase, sql, callback, (void*)data, &zErrMsg);
 
-		if (rc) {
-			fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-			exit(0);
+		//if the DATA Table does not exist, make it
+		if (rc != SQLITE_OK) {
+			fprintf(stderr, "SQL error: %s\n", zErrMsg);
+			return "Successful Query";
 		}
 		else {
-			fprintf(stderr, "Opened database successfully\n");
+			//if the data wasn't found return an unsuccessful query
+			return "Unsuccessful Query";
 		}
-		sqlite3_close(db);
+		//ENDSQLITE STUFF HERE
+		
 
 		//END DATABASE CONNECTION
-
+		/*
 		std::set<std::string>::iterator it;
 		for (it = database->begin(); it != database->end(); it++) {
 			if (*it == clientQuery) {
@@ -179,9 +289,10 @@ public:
 				break;
 			}
 		}
+		*/
 
 		//if the data wasn't found return an unsuccessful query
-		return "Unsuccessful Query";
+		//return "Unsuccessful Query";
 	}
 
 	struct Connect {

@@ -127,7 +127,8 @@ public:
 
 		std::string query;
 		std::cout << "Query for data: ";
-		std::cin >> query;
+		std::cin.ignore();				//clear the buffer
+		std::getline(std::cin, query);	//get the query from the user
 		std::string nodeServerResponse = server->queryFromClient(query);
 
 		//if the local database has the data, then stop the function and don't try to look at other peers
@@ -135,6 +136,8 @@ public:
 			std::cout << "Found data on local database." << std::endl;
 			return; 
 		}
+
+		bool found = false;
 
 		std::set<std::string>::iterator it = knownIPs->begin();
 		while(it != knownIPs->end()){
@@ -161,11 +164,13 @@ public:
 				if (msg == "Have it!!!") {
 					//if the data was found, break from the loop
 					std::cout << "Successful Query\n";
+					found = true;
 					break;
 				}
 				else {
 					//if the data wasn't found, try the next IP
 					std::cout << "Unsuccessful Query\n";
+					found = false;
 					it++;
 				}
 				conn->sock_close();
@@ -173,6 +178,10 @@ public:
 			else {
 				std::cout << "Connection not valid" << std::endl;
 			}
+		}
+
+		if (!found) {
+			std::cout << "Could not find data." << std::endl;
 		}
 	}
 
