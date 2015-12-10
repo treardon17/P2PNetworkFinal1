@@ -18,7 +18,6 @@
 class Server {
 private:
 	std::set<std::string> *knownIPs;
-	//std::set<std::string> *database;
 	sqlite3* localDatabase;
 	Socket* socket;
 	std::mutex lock;					// Lock console for mutual exclusive access
@@ -62,7 +61,6 @@ public:
 	//Copy constructor
 	Server(const Server&server) {
 		*knownIPs = *server.knownIPs;
-		//*database = *server.localDatabase;
 
 		char *zErrMsg = 0;
 		int rc;
@@ -127,24 +125,24 @@ public:
 		const char* data = "Callback function called";
 		int rc;
 
-		/* Execute SQL statement */
+		/*
 		rc = sqlite3_exec(localDatabase, strdup(sql.c_str()), callback, 0, &zErrMsg);
 		if (rc != SQLITE_OK) {
 			fprintf(stderr, "SQL error: %s\n", zErrMsg);
 			sqlite3_free(zErrMsg);
 			return "error";
 		}
-		else {
+		else*/ {
 			sqlite3_free(zErrMsg);
 			std::string results;
 
 			//get all the rows
 			sqlite3_stmt *statement;
+			int res = 0;
 
 			if (sqlite3_prepare(localDatabase, strdup(sql.c_str()), -1, &statement, 0) == SQLITE_OK)
 			{
 				int ctotal = sqlite3_column_count(statement);
-				int res = 0;
 
 				while (1){
 					res = sqlite3_step(statement);
@@ -155,29 +153,26 @@ public:
 						}
 					}
 					if (res == SQLITE_DONE || res == SQLITE_ERROR){
-						//std::cout << "done " << std::endl;
 						break;
 					}
 				}
+			}
+
+			if (res != SQLITE_DONE) {
+				fprintf(stderr, "SQL error: %s\n", zErrMsg);
+				sqlite3_free(zErrMsg);
+				return "error";
 			}
 
 			//end get all rows
 
 			return results; //success
 		}
-		return "error"; //fail
+		//return "error"; //fail
 	}
 
 	void populateDatabase() {
 		std::lock_guard<std::mutex> lk(lock);
-
-		/*
-		for (int i = 0; i < 10; i++) {
-			std::ostringstream myInt;
-			myInt << i;
-			//database->insert(myInt.str());
-		}
-		*/
 
 		//INSERT STUFF INTO THE SQLITE DATABASE!!
 		bool tableExists = false;
@@ -234,7 +229,6 @@ public:
 		std::string msg;
 		do {
 			msg = conn->msg_recv();
-			//std::cout << msg << std::endl; //debugging
 
 			std::mutex lock;
 			std::lock_guard<std::mutex> lk(lock);
@@ -247,19 +241,6 @@ public:
 			msg = conn->msg_recv(); // client query
 			bool found = false;
 
-			/*
-			if (msg != "") {
-				std::set<std::string>::iterator it;
-				for (it = server->database->begin(); it != server->database->end(); it++) {
-					if (*it == msg) {
-						conn->msg_send("Have it!!!");
-						found = true;
-						break;
-					}
-				}
-			}
-			*/
-
 			//SQLITE STUFF HERE
 			std::string results = server->executeSQL(msg);
 			if (results == "error") {
@@ -270,12 +251,6 @@ public:
 			}
 			//ENDSQLITE STUFF HERE
 
-			//if the data was not found
-			/*
-			if (!found) {
-				conn->msg_send("Don't have it.");
-			}
-			*/
 		} while (msg != "");
 	}
 
@@ -293,19 +268,6 @@ public:
 		}
 
 		//END DATABASE CONNECTION
-		/*
-		std::set<std::string>::iterator it;
-		for (it = database->begin(); it != database->end(); it++) {
-			if (*it == clientQuery) {
-				//if the query was a success, return a success message
-				return "Successful Query";
-				break;
-			}
-		}
-		*/
-
-		//if the data wasn't found return an unsuccessful query
-		//return "Unsuccessful Query";
 	}
 
 	struct Connect {

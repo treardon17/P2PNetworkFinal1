@@ -1,9 +1,23 @@
-﻿Build started 12/10/2015 10:27:33 AM.
+﻿Build started 12/10/2015 11:38:36 AM.
      1>Project "C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\P2PNetworkFinal\P2PNetworkFinal.vcxproj" on node 2 (Build target(s)).
-     1>Link:
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /I.\SQLite /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
+         main.cpp
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\socket.h(266): warning C4018: '<': signed/unsigned mismatch
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\server.h(143): warning C4996: 'strdup': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _strdup. See online help for details.
+         c:\program files (x86)\windows kits\10\include\10.0.10150.0\ucrt\string.h(552): note: see declaration of 'strdup'
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\server.h(126): warning C4101: 'rc': unreferenced local variable
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\client.h(68): warning C4018: '<': signed/unsigned mismatch
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\client.h(91): warning C4018: '<': signed/unsigned mismatch
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\client.h(221): warning C4018: '<': signed/unsigned mismatch
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\node.h(63): warning C4150: deletion of pointer to incomplete type 'sqlite3'; no destructor called
+         c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\sqlite\sqlite3.h(227): note: see declaration of 'sqlite3'
+     1>c:\users\treardon17\documents\github\p2pnetworkfinal1\p2pnetworkfinal\socket.h(344): warning C4715: 'Socket::getComputerIP': not all control paths return a value
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\Debug\P2PNetworkFinal.exe" /INCREMENTAL /NOLOGO /LIBPATH:.\SQLite kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib sqlite3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\Debug\P2PNetworkFinal.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\Debug\P2PNetworkFinal.lib" /MACHINE:X86 Debug\main.obj
          P2PNetworkFinal.vcxproj -> C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\Debug\P2PNetworkFinal.exe
      1>Done Building Project "C:\Users\treardon17\Documents\GitHub\P2PNetworkFinal1\P2PNetworkFinal\P2PNetworkFinal.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:00.03
+Time Elapsed 00:00:01.20

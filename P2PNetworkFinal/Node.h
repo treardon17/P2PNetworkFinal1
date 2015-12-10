@@ -9,7 +9,6 @@
 
 class Node {
 private:
-	//std::set<std::string> *database;
 	std::set<std::string> *knownIPs;
 	Server *server;
 	Client *client;
