@@ -121,6 +121,30 @@ public:
 		std::cout << "---------------------------------------" << std::endl;
 	}
 
+	//Allows a user to insert their name into the DATA table
+	void insertNewName() {
+		std::string name;
+		std::string age;
+
+		std::cout << "Insert data:" << std::endl;
+		std::cout << "Name: ";
+		std::cin.ignore();
+		std::getline(std::cin, name);
+		std::cout << "Age: ";
+		std::cin >> age;
+
+		std::ostringstream insertQuery;
+		insertQuery << "INSERT INTO DATA (NAME,AGE) "  \
+			"VALUES ('" << name << "', " << age << "); ";
+		
+		if (server->executeSQL(insertQuery.str())) {
+			std::cout << "Insert Success" << std::endl;
+		}
+		else {
+			std::cout << "Insert failure" << std::endl;
+		}
+	}
+
 	void query() {
 
 		//MUST ADD ABILITY TO QUERY OWN SERVER
@@ -186,7 +210,8 @@ public:
 	}
 
 	void chooseAction() {
-		std::vector<std::string> actions = { "Add new peer", "Query for data", "List known IPs" };
+		std::vector<std::string> actions = { "Add new peer", "List known IPs", 
+			"Query for data", "Add name to database" };
 		std::cout << "Choose action to perform: " << std::endl;
 
 		//output the list of potential actions
@@ -210,10 +235,13 @@ public:
 			newConnection();
 			break;
 		case 'b':
-			query();
+			listKnownIPs();
 			break;
 		case 'c':
-			listKnownIPs();
+			query();
+			break;
+		case 'd':
+			insertNewName();
 			break;
 		default:
 			std::cout << "Could not perform action. Invalid input." << std::endl;

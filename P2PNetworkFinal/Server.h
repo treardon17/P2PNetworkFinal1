@@ -98,9 +98,9 @@ public:
 	bool makeTable() {
 		//SQL to make table
 		std::string sql = "CREATE TABLE DATA("  \
-			"ID INT PRIMARY KEY     NOT NULL," \
-			"NAME           TEXT    NOT NULL," \
-			"AGE            INT     NOT NULL);";
+			"ID INTEGER PRIMARY KEY AUTOINCREMENT	NOT NULL," \
+			"NAME           TEXT					NOT NULL," \
+			"AGE            INT						NOT NULL);";
 
 		//executes SQL statement
 		if (executeSQL(sql)) {
@@ -113,11 +113,14 @@ public:
 		}
 	}
 
+
+	//checks to see if the DATA table exists
 	bool tableExists() {
 		std::string sql = "SELECT * FROM DATA";
 		return executeSQL(sql);
 	}
 
+	//executes query on local database
 	bool executeSQL(std::string sql) {
 		char *zErrMsg = 0;
 		const char* data = "Callback function called";
@@ -154,14 +157,14 @@ public:
 			tableExists = true;
 		}
 		else {
+			//make the table and see if it was successful
 			tableExists = makeTable();
 		}
 
 		//if the table exists, then we can add stuff to it
 		if (tableExists) {
-
-			//do stuff with table!!!
-
+			
+			//populate database here!!!
 
 		}
 		else {
@@ -228,18 +231,8 @@ public:
 			}
 			*/
 
-
 			//SQLITE STUFF HERE
-			char *zErrMsg = 0;
-			const char* data = "Callback function called";
-			char* sql = strdup(msg.c_str()); //query from client
-			int rc;
-
-			rc = sqlite3_exec(server->localDatabase, sql, callback, (void*)data, &zErrMsg);
-
-			//if the DATA Table does not exist, make it
-			if (rc != SQLITE_OK) {
-				fprintf(stderr, "SQL error: %s\n", zErrMsg);
+			if (server->executeSQL(msg)) {
 				conn->msg_send("Don't have it.");
 			}
 			else {
@@ -259,25 +252,13 @@ public:
 	std::string queryFromClient(std::string clientQuery) {
 
 		//ADD DATABASE CONNECTION HERE (local database)
-		//SQLITE STUFF HERE
-		char *zErrMsg = 0;
-		const char* data = "Callback function called";
-		char* sql = strdup(clientQuery.c_str()); //query from client
-		int rc;
-
-		rc = sqlite3_exec(localDatabase, sql, callback, (void*)data, &zErrMsg);
-
-		//if the DATA Table does not exist, make it
-		if (rc != SQLITE_OK) {
-			fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		if (executeSQL(clientQuery)) {
 			return "Successful Query";
 		}
 		else {
 			//if the data wasn't found return an unsuccessful query
 			return "Unsuccessful Query";
 		}
-		//ENDSQLITE STUFF HERE
-		
 
 		//END DATABASE CONNECTION
 		/*
