@@ -137,7 +137,7 @@ public:
 		insertQuery << "INSERT INTO DATA (NAME,AGE) "  \
 			"VALUES ('" << name << "', " << age << "); ";
 		
-		if (server->executeSQL(insertQuery.str())) {
+		if (server->executeSQL(insertQuery.str()) != "error") {
 			std::cout << "Insert Success" << std::endl;
 		}
 		else {
@@ -156,8 +156,8 @@ public:
 		std::string nodeServerResponse = server->queryFromClient(query);
 
 		//if the local database has the data, then stop the function and don't try to look at other peers
-		if (nodeServerResponse == "Successful Query") { 
-			std::cout << "Found data on local database." << std::endl;
+		if (nodeServerResponse != "Unsuccessful Query") { 
+			std::cout << nodeServerResponse << std::endl;
 			return; 
 		}
 

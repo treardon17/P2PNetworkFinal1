@@ -8,7 +8,7 @@
 #include <sstream>
 #include <thread>
 #include <mutex>
-#include "sqlite3.h"
+#include "SQLite\sqlite3.h"
 #include "Socket.h"
 
 //DATABASE CONNECTION LIBRARIES
@@ -85,12 +85,12 @@ public:
 	}
 
 	static int callback(void *data, int argc, char **argv, char **azColName) {
-		int i;
-		fprintf(stderr, "%s: ", (const char*)data);
-		for (i = 0; i<argc; i++) {
-			printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-		}
-		printf("\n");
+		//int i;
+		//fprintf(stderr, "%s: ", (const char*)data);
+		//for (i = 0; i<argc; i++) {
+			//printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
+		//}
+		//printf("\n");
 		return 0;
 	}
 
@@ -103,7 +103,7 @@ public:
 			"AGE            INT						NOT NULL);";
 
 		//executes SQL statement
-		if (executeSQL(sql)) {
+		if (executeSQL(sql) != "error") {
 			std::cout << "SERVER: created table" << std::endl;
 			return true;
 		}
@@ -115,13 +115,13 @@ public:
 
 
 	//checks to see if the DATA table exists
-	bool tableExists() {
+	std::string tableExists() {
 		std::string sql = "SELECT * FROM DATA";
 		return executeSQL(sql);
 	}
 
 	//executes query on local database
-	bool executeSQL(std::string sql) {
+	std::string executeSQL(std::string sql) {
 		char *zErrMsg = 0;
 		const char* data = "Callback function called";
 		int rc;
@@ -131,12 +131,47 @@ public:
 		if (rc != SQLITE_OK) {
 			fprintf(stderr, "SQL error: %s\n", zErrMsg);
 			sqlite3_free(zErrMsg);
+			return "error";
 		}
 		else {
 			sqlite3_free(zErrMsg);
-			return true;
+			std::string results;
+
+
+			//get all the rows
+			sqlite3_stmt *statement;
+
+			if (sqlite3_prepare(localDatabase, strdup(sql.c_str()), -1, &statement, 0) == SQLITE_OK)
+			{
+				int ctotal = sqlite3_column_count(statement);
+				int res = 0;
+
+				while (1)
+				{
+					res = sqlite3_step(statement);
+
+					if (res == SQLITE_ROW)
+					{
+						for (int i = 0; i < ctotal; i++)
+						{
+							results += (char*)sqlite3_column_text(statement, i);
+							results += "\n";
+						}
+					}
+
+					if (res == SQLITE_DONE || res == SQLITE_ERROR)
+					{
+						//std::cout << "done " << std::endl;
+						break;
+					}
+				}
+			}
+
+			//end get all rows
+
+			return results; //success
 		}
-		return false;
+		return "error"; //fail
 	}
 
 	void populateDatabase() {
@@ -153,7 +188,7 @@ public:
 		//INSERT STUFF INTO THE SQLITE DATABASE!!
 		bool tableExists = false;
 
-		if (this->tableExists()) {
+		if (this->tableExists() != "error") {
 			tableExists = true;
 		}
 		else {
@@ -232,11 +267,12 @@ public:
 			*/
 
 			//SQLITE STUFF HERE
-			if (server->executeSQL(msg)) {
+			std::string results = server->executeSQL(msg);
+			if (results == "error") {
 				conn->msg_send("Don't have it.");
 			}
 			else {
-				conn->msg_send("Have it!");
+				conn->msg_send(results);
 			}
 			//ENDSQLITE STUFF HERE
 
@@ -252,8 +288,10 @@ public:
 	std::string queryFromClient(std::string clientQuery) {
 
 		//ADD DATABASE CONNECTION HERE (local database)
-		if (executeSQL(clientQuery)) {
-			return "Successful Query";
+		std::string results = executeSQL(clientQuery);
+		if (results != "error") {
+			//DO STUFF WITH RESULTS HERE!!!!!
+			return results;
 		}
 		else {
 			//if the data wasn't found return an unsuccessful query
