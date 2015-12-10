@@ -120,6 +120,7 @@ public:
 		return executeSQL(sql);
 	}
 
+
 	//executes query on local database
 	std::string executeSQL(std::string sql) {
 		char *zErrMsg = 0;
@@ -137,7 +138,6 @@ public:
 			sqlite3_free(zErrMsg);
 			std::string results;
 
-
 			//get all the rows
 			sqlite3_stmt *statement;
 
@@ -146,21 +146,15 @@ public:
 				int ctotal = sqlite3_column_count(statement);
 				int res = 0;
 
-				while (1)
-				{
+				while (1){
 					res = sqlite3_step(statement);
-
-					if (res == SQLITE_ROW)
-					{
-						for (int i = 0; i < ctotal; i++)
-						{
+					if (res == SQLITE_ROW){
+						for (int i = 0; i < ctotal; i++){
 							results += (char*)sqlite3_column_text(statement, i);
 							results += "\n";
 						}
 					}
-
-					if (res == SQLITE_DONE || res == SQLITE_ERROR)
-					{
+					if (res == SQLITE_DONE || res == SQLITE_ERROR){
 						//std::cout << "done " << std::endl;
 						break;
 					}
@@ -289,7 +283,7 @@ public:
 
 		//ADD DATABASE CONNECTION HERE (local database)
 		std::string results = executeSQL(clientQuery);
-		if (results != "error") {
+		if (results != "error" && results != "") {
 			//DO STUFF WITH RESULTS HERE!!!!!
 			return results;
 		}

@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 #include "Socket.h"
 
 class Client {
@@ -136,8 +137,9 @@ public:
 		std::ostringstream insertQuery;
 		insertQuery << "INSERT INTO DATA (NAME,AGE) "  \
 			"VALUES ('" << name << "', " << age << "); ";
+		std::string myQuery = insertQuery.str();
 		
-		if (server->executeSQL(insertQuery.str()) != "error") {
+		if (server->executeSQL(myQuery) != "error") {
 			std::cout << "Insert Success" << std::endl;
 		}
 		else {
@@ -153,6 +155,7 @@ public:
 		std::cout << "Query for data: ";
 		std::cin.ignore();				//clear the buffer
 		std::getline(std::cin, query);	//get the query from the user
+		std::replace(query.begin(), query.end(), '"', '\''); //sanitizes input
 		std::string nodeServerResponse = server->queryFromClient(query);
 
 		//if the local database has the data, then stop the function and don't try to look at other peers
@@ -185,9 +188,9 @@ public:
 
 				msg = conn->msg_recv();
 
-				if (msg == "Have it!!!") {
+				if (msg != "") {
 					//if the data was found, break from the loop
-					std::cout << "Successful Query\n";
+					std::cout << msg << std::endl;
 					found = true;
 					break;
 				}
@@ -245,6 +248,7 @@ public:
 			break;
 		default:
 			std::cout << "Could not perform action. Invalid input." << std::endl;
+			std::cin.ignore();
 			break;
 		}
 		std::cout << std::endl;
