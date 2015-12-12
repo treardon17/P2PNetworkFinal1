@@ -8,6 +8,7 @@
 #include <sstream>
 #include <thread>
 #include <mutex>
+#include <vector>
 #include "SQLite\sqlite3.h"
 #include "Socket.h"
 
@@ -124,51 +125,80 @@ public:
 		char *zErrMsg = 0;
 		const char* data = "Callback function called";
 		int rc;
+		std::vector<std::vector<std::string> > resultSet;
+		std::vector<int> stringSizes;
 
-		/*
-		rc = sqlite3_exec(localDatabase, strdup(sql.c_str()), callback, 0, &zErrMsg);
-		if (rc != SQLITE_OK) {
+		sqlite3_free(zErrMsg);
+		std::ostringstream results;
+
+		//get all the rows
+		sqlite3_stmt *statement;
+		int res = 0;
+
+		if (sqlite3_prepare(localDatabase, strdup(sql.c_str()), -1, &statement, 0) == SQLITE_OK)
+		{
+			int ctotal = sqlite3_column_count(statement);
+
+
+
+			while (1) {
+				res = sqlite3_step(statement);
+				if (res == SQLITE_ROW) {
+					std::vector<std::string> row;									//holds strings representing the tuple
+					for (int i = 0; i < ctotal; i++) {
+						row.push_back((char*)sqlite3_column_text(statement, i));	//store the strings in the row
+					}
+					resultSet.push_back(row);										//store the row in the results
+				}
+				if (res == SQLITE_DONE || res == SQLITE_ERROR) {
+					break;
+				}
+			}
+
+			//format data to be displayed
+			if (resultSet.size() > 0) {
+				//formatting the results
+				results << "-------------------------------\n";
+				int difference = 0;
+				int tempSize = 0;
+
+				//look at all items in each column and compare their width
+				for (int col = 0; col < resultSet[0].size(); col++) {
+					for (int row = 0; row < resultSet.size(); row++) {
+						if (tempSize < resultSet[row][col].size()) {
+							tempSize = resultSet[row][col].size();
+						}
+					}
+					stringSizes.push_back(tempSize);
+					tempSize = 0;
+				}
+
+				//formats and output results of database query
+				for (int i = 0; i < resultSet.size(); i++) {
+					for (int j = 0; j < resultSet[i].size(); j++) {
+						if (resultSet[i][j].size() < stringSizes[j]) {
+							difference = stringSizes[j] - resultSet[i][j].size();
+							for (int k = 0; k < difference; k++) {
+								resultSet[i][j] += " ";
+							}
+						}
+						results << "|" + resultSet[i][j] + "|";
+					}
+					results << "\n";
+				}
+				results << "\n-------------------------------\n";
+			}
+		}
+
+
+		//if there was an error...
+		if (res != SQLITE_DONE) {
 			fprintf(stderr, "SQL error: %s\n", zErrMsg);
 			sqlite3_free(zErrMsg);
 			return "error";
 		}
-		else*/ {
-			sqlite3_free(zErrMsg);
-			std::string results;
 
-			//get all the rows
-			sqlite3_stmt *statement;
-			int res = 0;
-
-			if (sqlite3_prepare(localDatabase, strdup(sql.c_str()), -1, &statement, 0) == SQLITE_OK)
-			{
-				int ctotal = sqlite3_column_count(statement);
-
-				while (1){
-					res = sqlite3_step(statement);
-					if (res == SQLITE_ROW){
-						for (int i = 0; i < ctotal; i++){
-							results += (char*)sqlite3_column_text(statement, i);
-							results += "\n";
-						}
-					}
-					if (res == SQLITE_DONE || res == SQLITE_ERROR){
-						break;
-					}
-				}
-			}
-
-			if (res != SQLITE_DONE) {
-				fprintf(stderr, "SQL error: %s\n", zErrMsg);
-				sqlite3_free(zErrMsg);
-				return "error";
-			}
-
-			//end get all rows
-
-			return results; //success
-		}
-		//return "error"; //fail
+		return results.str(); //success
 	}
 
 	void populateDatabase() {
